@@ -1,0 +1,39 @@
+body {
+    background-color: black;
+    color: white;
+
+    font-family: 'Poppins';
+    overscroll-behavior: contain;
+}
+
+#title, p {
+    text-align: center;
+}
+
+canvas {
+    width: 504px;
+    aspect-ratio: 1 / 1;
+
+    border: 1px solid gray;
+    border-radius: 10px;
+
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+
+button {
+    background-color: black;
+    color: white;
+    border: 1px solid gray;
+    border-radius: 10px;
+    width: 100px;
+    aspect-ratio: 4 / 2;
+
+    user-select: none;
+    transition: background-color 0.15s ease-in-out;
+}
+
+button:hover {
+    background-color: rgb(60, 60, 60);
+}
