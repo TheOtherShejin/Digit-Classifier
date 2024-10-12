@@ -75,11 +75,10 @@ function SoftMax(vector) {
     let output = Array(vector.length).fill(0);
     let sum = 0;
     for (let i = 0; i < vector.length; i++) {
-        sum += Math.exp(vector[i]);
+        output[i] = Math.exp(vector[i]);
+        sum += output[i];
     }
-    for (let i = 0; i < vector.length; i++) {
-        output[i] = Math.exp(vector[i]) / sum;
-    }
+    output.forEach((num, idx, arr) => { arr[idx] /= sum });
     return output;
 }
 

@@ -46,7 +46,7 @@ function DrawBlurredCanvas() {
 
 function BlurCanvas() {
     let blurredPixels = Array.from(Array(28), () => Array(28).fill(0));
-    const scalar = 1;
+    const scalar = 1/2;
     const kernel = [
         [1/4, 1/2, 1/4],
         [1/2,   1, 1/2],
@@ -69,14 +69,17 @@ function BlurCanvas() {
 }
 
 function DrawGraph(input) {
+    let prediction = MaxVectorIndex(input);
     gctx.clearRect(0, 0, graph.clientWidth, graph.clientHeight);
     gctx.beginPath();
     gctx.font = "24px Arial";
     for (let i = 0; i < input.length; i++) {
-        gctx.fillStyle = "blue";
+        gctx.fillStyle = "rgb(53, 83, 253)";
         gctx.fillRect(0, i*(graphHeight / 10), input[i]*graphWidth, graphHeight / 10); 
-        gctx.fillStyle = "white";
+        if (i == prediction) gctx.fillStyle = "white";
+        else gctx.fillStyle = "rgb(150, 150, 150)";
         gctx.fillText(i, 10, (i+1)*(graphHeight/10)-12);
+        gctx.fillText(`${Math.round(input[i] * 10000) / 100}%`, graphWidth - 90, (i+1)*(graphHeight/10)-12);
     }
     gctx.stroke();
 }
@@ -92,6 +95,8 @@ window.onmousemove = function(e) {
         }
     }
 }
+
+window.onload = DrawGraph(PredictConfidence(BlurCanvas()));
 
 window.onkeydown = function(e) {
     if (e.key == 'r') {
