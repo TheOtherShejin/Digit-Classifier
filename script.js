@@ -1,11 +1,20 @@
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext('2d');
+var graph = document.getElementById("graph");
+var gctx = graph.getContext('2d');
+
 var pixelWidth = canvas.clientWidth / 28;
 var pixelHeight = canvas.clientHeight / 28;
 var canvasX = canvas.getBoundingClientRect().x;
 var canvasY = canvas.getBoundingClientRect().y;
+var graphHeight = graph.clientHeight;
+var graphWidth = graph.clientWidth;
 
 var pixels = Array.from(Array(28), () => Array(28).fill(0));
+
+var nn = new NeuralNetwork(model["config"]);
+nn.SetAllWeights(model["weights"]);
+nn.SetAllBiases(model["biases"]);
 
 function DrawPixel(x, y, brightness) {
     ctx.beginPath();
@@ -16,6 +25,13 @@ function DrawPixel(x, y, brightness) {
 
 function ClearCanvas() {
     ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+}
+function ClearPixelData() {
+    pixels = Array.from(Array(28), () => Array(28).fill(0));
+}
+function Clear() {
+    ClearCanvas();
+    ClearPixelData();
 }
 
 function DrawBlurredCanvas() {
@@ -52,6 +68,19 @@ function BlurCanvas() {
     return blurredPixels;
 }
 
+function DrawGraph(input) {
+    gctx.clearRect(0, 0, graph.clientWidth, graph.clientHeight);
+    gctx.beginPath();
+    gctx.font = "24px Arial";
+    for (let i = 0; i < input.length; i++) {
+        gctx.fillStyle = "blue";
+        gctx.fillRect(0, i*(graphHeight / 10), input[i]*graphWidth, graphHeight / 10); 
+        gctx.fillStyle = "white";
+        gctx.fillText(i, 10, (i+1)*(graphHeight/10)-12);
+    }
+    gctx.stroke();
+}
+
 window.onmousemove = function(e) {
     if (e.buttons & 1) {
         let x = Math.floor((e.clientX - canvasX) / pixelWidth);
@@ -59,17 +88,17 @@ window.onmousemove = function(e) {
         if (x >= 0 && y >= 0) {
             pixels[y][x] = 255;
             DrawBlurredCanvas();
+            DrawGraph(PredictConfidence(BlurCanvas()));
         }
     }
 }
 
 window.onkeydown = function(e) {
     if (e.key == 'r') {
-        ClearCanvas();
-        pixels = Array.from(Array(28), () => Array(28).fill(0));
+        Clear();
+        DrawGraph(PredictConfidence(BlurCanvas()));
     }
 }
-
 window.onresize = function(e) {
     canvasX = canvas.getBoundingClientRect().x;
     canvasY = canvas.getBoundingClientRect().y;
@@ -80,7 +109,6 @@ function IsTouchEnabled() {
            ( navigator.maxTouchPoints > 0 ) ||
            ( navigator.msMaxTouchPoints > 0 );
 }
-
 if (IsTouchEnabled()) {
     document.addEventListener("touchmove", (e) => {
         let x = Math.floor((e.touches[0].clientX - canvasX) / pixelWidth);

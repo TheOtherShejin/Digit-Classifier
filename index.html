@@ -12,10 +12,15 @@
 </head>
 <body>
     <h1 id="title">Digit Classifier</h1>
-    <p>Start Writing Digits Between 0 and 9</p>
-    <canvas id="canvas" width="504px" height="504px"></canvas>
-    <button title="Clear Canvas (r)" onclick="ClearCanvas()">Clear</button>
+    <p>Start Writing Digits Between 0 and 9 in the Box Below</p>
+    <div id="ui">
+        <canvas id="canvas" width="504px" height="504px"></canvas>
+        <canvas id="graph" width="204px" height="504px"></canvas>
+    </div>
+    <button title="Clear Canvas (r)" onclick="Clear()">Clear</button>
 
+    <script type="text/javascript" src="digit_classification_30_3_10.js"></script>
+    <script type="text/javascript" src="NeuralNetwork.js"></script>
     <script lang="javascript" src="script.js"></script>
 </body>
 </html>
