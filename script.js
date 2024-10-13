@@ -3,12 +3,10 @@ var ctx = canvas.getContext('2d');
 var graph = document.getElementById("graph");
 var gctx = graph.getContext('2d');
 
-var pixelWidth = canvas.clientWidth / 28;
-var pixelHeight = canvas.clientHeight / 28;
+var pixelWidth = canvas.width / 28;
+var pixelHeight = canvas.height / 28;
 var canvasX = canvas.getBoundingClientRect().x;
 var canvasY = canvas.getBoundingClientRect().y;
-var graphHeight = graph.clientHeight;
-var graphWidth = graph.clientWidth;
 
 var pixels = Array.from(Array(28), () => Array(28).fill(0));
 
@@ -75,29 +73,35 @@ function DrawGraph(input) {
     gctx.font = "24px Arial";
     for (let i = 0; i < input.length; i++) {
         gctx.fillStyle = "rgb(53, 83, 253)";
-        gctx.fillRect(0, i*(graphHeight / 10), input[i]*graphWidth, graphHeight / 10); 
+        gctx.fillRect(0, i*(graph.height / 10), input[i]*graph.width, graph.height / 10);
         if (i == prediction) gctx.fillStyle = "white";
         else gctx.fillStyle = "rgb(150, 150, 150)";
-        gctx.fillText(i, 10, (i+1)*(graphHeight/10)-12);
-        gctx.fillText(`${Math.round(input[i] * 10000) / 100}%`, graphWidth - 90, (i+1)*(graphHeight/10)-12);
+        gctx.fillText(i, 10, (i+1)*(graph.height/10)-12);
+        gctx.fillText(`${Math.round(input[i] * 10000) / 100}%`, graph.width - 90, (i+1)*(graph.height/10)-12);
     }
     gctx.stroke();
+}
+
+function Update(x, y) {
+    if (x >= 0 && y >= 0 && x < 28 && y < 28) {
+        pixels[y][x] = 255;
+        DrawBlurredCanvas();
+        DrawGraph(PredictConfidence(BlurCanvas()));
+    }
 }
 
 window.onmousemove = function(e) {
     if (e.buttons & 1) {
         let x = Math.floor((e.clientX - canvasX) / pixelWidth);
-        let y = Math.floor((e.clientY - canvasY) / pixelHeight);
-        if (x >= 0 && y >= 0) {
-            pixels[y][x] = 255;
-            DrawBlurredCanvas();
-            DrawGraph(PredictConfidence(BlurCanvas()));
-        }
+        let y = Math.floor((e.clientY + scrollY - canvasY) / pixelHeight);
+        Update(x, y); 
     }
 }
-
-window.onload = DrawGraph(PredictConfidence(BlurCanvas()));
-
+window.onload = function() {
+    if (IsPortrait()) graph.width = 504;
+    else graph.width = 252;
+    DrawGraph(PredictConfidence(BlurCanvas()));
+}
 window.onkeydown = function(e) {
     if (e.key == 'r') {
         Clear();
@@ -107,6 +111,11 @@ window.onkeydown = function(e) {
 window.onresize = function(e) {
     canvasX = canvas.getBoundingClientRect().x;
     canvasY = canvas.getBoundingClientRect().y;
+
+    if (IsPortrait()) graph.width = 504;
+    else graph.width = 252;
+
+    DrawGraph(PredictConfidence(BlurCanvas()));
 }
 
 function IsTouchEnabled() {
@@ -117,10 +126,11 @@ function IsTouchEnabled() {
 if (IsTouchEnabled()) {
     document.addEventListener("touchmove", (e) => {
         let x = Math.floor((e.touches[0].clientX - canvasX) / pixelWidth);
-        let y = Math.floor((e.touches[0].clientY - canvasY) / pixelHeight);
-        if (x >= 0 && y >= 0) {
-            pixels[y][x] = 255;
-            DrawBlurredCanvas();
-        }
+        let y = Math.floor((e.touches[0].clientY + window.scrollY - canvasY) / pixelHeight);
+        Update(x, y);
     });
+}
+
+function IsPortrait() {
+    return document.body.clientWidth < 800;
 }
