@@ -1,12 +1,20 @@
+:root {
+    --pixel-width: 18px;
+}
+
 body {
     background-color: black;
     color: white;
 
     margin: 0px;
+    padding: 0px;
     width: 100vw;
     height: 100vh;
 
-    font-family: 'Poppins';
+    font-family: 'Poppins', 'Jetbrains Mono', sans-serif;
+
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 ::-webkit-scrollbar {
@@ -22,8 +30,14 @@ body {
     background-color: rgb(40, 40, 40);
 }
 
-#title, p {
+#title {
     text-align: center;
+    margin: 5px;
+}
+
+#subtitle {
+    text-align: center;
+    margin: 0px;
 }
 
 #ui {
@@ -39,7 +53,7 @@ body {
 }
 
 #canvas {
-    width: 504px;
+    width: calc(28*var(--pixel-width));
     aspect-ratio: 1 / 1;
     margin: 10px;
 
@@ -48,7 +62,7 @@ body {
 }
 
 #graph {
-    width: 252px;
+    width: calc(14*var(--pixel-width));
     aspect-ratio: 1 / 2;
     margin: 10px;
 
@@ -58,13 +72,17 @@ body {
 
 @media (orientation: portrait) or (max-width: 800px) {
     body {
+        overflow-x: hidden;
         overflow-y: scroll;
     }
     #ui {
         flex-direction: column;
     }
+    #canvas {
+        width: min(90vw, calc(28*var(--pixel-width)));
+    }
     #graph {
-        width: 504px;
+        width: min(90vw, calc(28*var(--pixel-width)));
         aspect-ratio: 1;
     }
 }
@@ -78,7 +96,7 @@ button {
     aspect-ratio: 2 / 1;
 
     position: absolute;
-    top: 10px;
+    top: 30px;
     left: 10px;
 
     user-select: none;
